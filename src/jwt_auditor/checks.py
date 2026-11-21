@@ -154,7 +154,7 @@ def check_lifetime(token, now=None):
     exp = _numeric_claim(payload, "exp")
     iat = _numeric_claim(payload, "iat")
     nbf = _numeric_claim(payload, "nbf")
-    
+
     if exp is None:
         findings.append(Finding(
             check_id="missing-expiry",
