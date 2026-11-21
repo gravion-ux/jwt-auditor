@@ -134,3 +134,29 @@ def test_healthy_token_has_no_findings():
         {"alg": "HS256", "typ": "JWT", "kid": "2026-key-1"},
         healthy_payload(), key=b"x" * 40))
     assert audit_token(token, now=NOW) == []
+
+def test_missing_iat_flagged():
+    payload = healthy_payload()
+    del payload["iat"]
+    token = decode_token(mint({"alg": "HS256"}, payload, key=b"x" * 40))
+    findings = audit_token(token, now=NOW)
+    assert ids(findings) == {"missing-issued-at"}
+    hit = next(f for f in findings if f.check_id == "missing-issued-at")
+    assert hit.severity == "low"
+
+
+def test_missing_iat_keeps_token_low_risk():
+    from jwt_auditor.report import grade, risk_score
+
+    payload = healthy_payload()
+    del payload["iat"]
+    token = decode_token(mint({"alg": "HS256"}, payload, key=b"x" * 40))
+    findings = audit_token(token, now=NOW)
+    assert risk_score(findings) == 3
+    assert grade(risk_score(findings)) == "low"
+
+
+def test_healthy_token_with_iat_has_no_missing_iat_finding():
+    token = decode_token(mint({"alg": "HS256"}, healthy_payload(), key=b"x" * 40))
+    findings = audit_token(token, now=NOW)
+    assert "missing-issued-at" not in ids(findings)

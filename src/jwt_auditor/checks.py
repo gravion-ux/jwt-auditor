@@ -198,6 +198,16 @@ def check_lifetime(token, now=None):
                 remediation="Add iat and shorten exp; long validity windows "
                             "make leaked tokens durable.",
             ))
+    if iat is None:
+        findings.append(Finding(
+            check_id="missing-issued-at",
+            severity="low",
+            title="Token has no iat (issued-at) claim",
+            detail="Without iat, verifiers cannot tell when the token was "
+                   "issued or enforce a maximum token age.",
+            remediation="Include iat so verifiers can enforce maximum "
+                        "token age.",
+        ))
     if nbf is not None and nbf > now:
         findings.append(Finding(
             check_id="token-not-yet-valid",
