@@ -2,6 +2,7 @@
 
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![codecov](https://codecov.io/gh/gravion-ux/jwt-auditor/branch/main/graph/badge.svg)](https://codecov.io/gh/gravion-ux/jwt-auditor)
 [![Dependencies](https://img.shields.io/badge/runtime%20dependencies-none-brightgreen.svg)](#installation)
 
 **Audit a JSON Web Token for the weaknesses that actually get exploited — before someone else finds them.**
