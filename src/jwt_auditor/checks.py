@@ -19,7 +19,7 @@ from .secrets import find_weak_secret, is_hmac_alg
 # (CVE-2018-0114 and friends).
 EMBEDDED_KEY_PARAMS = ("jwk", "jku", "x5u", "x5c")
 
-_KID_INJECTION_RE = re.compile(r"(\.\./|\.\.\\|['\\";|]|/dev/null|\$\(|`|\\\x00)")
+_KID_INJECTION_RE = re.compile(r"(\.\./|\.\.\\|['\";|]|/dev/null|\$\(|`|\\\x00)")
 
 _SENSITIVE_CLAIM_RE = re.compile(
     r"(password|passwd|secret|ssn|social_security|credit_?card|card_?number|"
@@ -154,6 +154,7 @@ def check_lifetime(token, now=None):
     exp = _numeric_claim(payload, "exp")
     iat = _numeric_claim(payload, "iat")
     nbf = _numeric_claim(payload, "nbf")
+    
     if exp is None:
         findings.append(Finding(
             check_id="missing-expiry",
