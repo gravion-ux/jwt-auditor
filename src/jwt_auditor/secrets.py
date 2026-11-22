@@ -43,8 +43,12 @@ BUILTIN_SECRETS = (
     "signingkey",
     "token-secret",
     "auth-secret",
-    "keyboard cat",
+    "keyboard cat",  # Example secret from a widely copied web-session tutorial.
     "s3cr3t",
+    "super-secret-key",
+    "jwtSecret",
+    "secretKey",
+    "your_jwt_secret_key",
     "p@ssw0rd",
     "master",
     "demo",
