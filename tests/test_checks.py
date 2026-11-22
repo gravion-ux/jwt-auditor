@@ -59,6 +59,29 @@ def test_weak_secret_dictionary_hit_is_critical():
     assert "'secret'" in hit.detail
 
 
+def test_weak_secret_keyboard_cat_is_cracked():
+    token = decode_token(mint({"alg": "HS256"}, healthy_payload(), key=b"keyboard cat"))
+    findings = audit_token(token, now=NOW)
+    hit = next(f for f in findings if f.check_id == "weak-hmac-secret")
+    assert hit.severity == "critical"
+    assert "'keyboard cat'" in hit.detail
+
+
+def test_weak_secret_your_jwt_secret_key_is_cracked():
+    token = decode_token(mint({"alg": "HS256"}, healthy_payload(), key=b"your_jwt_secret_key"))
+    findings = audit_token(token, now=NOW)
+    hit = next(f for f in findings if f.check_id == "weak-hmac-secret")
+    assert hit.severity == "critical"
+    assert "'your_jwt_secret_key'" in hit.detail
+
+
+def test_long_random_secret_is_not_cracked():
+    token = decode_token(mint(
+        {"alg": "HS256"}, healthy_payload(),
+        key=b"7d9e2a4c-1b5f-48a3-9c6d-2e8f0a1b3c5d"))
+    assert "weak-hmac-secret" not in ids(audit_token(token, now=NOW))
+
+
 def test_strong_secret_is_not_cracked():
     token = decode_token(mint(
         {"alg": "HS256"}, healthy_payload(),
