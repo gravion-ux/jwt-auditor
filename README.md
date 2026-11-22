@@ -5,6 +5,10 @@
 [![codecov](https://codecov.io/gh/gravion-ux/jwt-auditor/branch/main/graph/badge.svg)](https://codecov.io/gh/gravion-ux/jwt-auditor)
 [![Dependencies](https://img.shields.io/badge/runtime%20dependencies-none-brightgreen.svg)](#installation)
 
+![Demo](docs/demo.png)
+
+*Demo: Auditing a token signed with a weak secret, from the bundled examples.*
+
 **Audit a JSON Web Token for the weaknesses that actually get exploited — before someone else finds them.**
 
 `jwt-auditor` is a small, dependency-free Python CLI that decodes a JWT and
