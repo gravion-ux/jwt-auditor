@@ -152,6 +152,22 @@ def test_sensitive_claims_flagged():
     assert "sensitive-claims" in ids(audit_token(token, now=NOW))
 
 
+def test_sensitive_claim_substrings_are_not_flagged():
+    """A claim that merely contains a sensitive fragment is not sensitive."""
+    for claim in ("shipping_address", "assignment_count", "secretary_name"):
+        token = decode_token(mint(
+            {"alg": "HS256"}, healthy_payload(**{claim: "x"}), key=b"x" * 40))
+        assert "sensitive-claims" not in ids(audit_token(token, now=NOW)), claim
+
+
+def test_sensitive_claim_compounds_are_still_flagged():
+    """A compound claim name still matches when it is a real sensitive name."""
+    for claim in ("user_pin", "pin_code", "user_social_security_number"):
+        token = decode_token(mint(
+            {"alg": "HS256"}, healthy_payload(**{claim: "x"}), key=b"x" * 40))
+        assert "sensitive-claims" in ids(audit_token(token, now=NOW)), claim
+
+
 def test_healthy_token_has_no_findings():
     token = decode_token(mint(
         {"alg": "HS256", "typ": "JWT", "kid": "2026-key-1"},
