@@ -45,7 +45,7 @@ calls, nothing is sent anywhere. See [Authorised use & ethics](#authorised-use--
 - **CI-friendly** — exit `1` when findings reach the `--fail-on` severity
   (default `high`), `0` when clean, `2` on usage errors / malformed tokens.
 - **Zero runtime dependencies** — Python standard library only.
-- **Tested** — 30 pytest tests covering decoding, every check family, the
+- **Tested** — 36 pytest tests covering decoding, every check family, the
   dictionary attack, and the CLI end to end.
 
 ## Installation
@@ -137,6 +137,14 @@ access anything beyond what your authorisation covers.
 pip install pytest
 python -m pytest
 ```
+
+## Sponsors
+
+Sponsorship pays for the maintenance, triage and release time behind this tool. Sponsors are
+listed here by name, and name placement starts at the $25 a month Sponsor tier or the $50
+one-time Sponsor tier.
+
+- [Sponsor on GitHub](https://github.com/sponsors/gravion-ux)
 
 ## License
 
