@@ -21,9 +21,14 @@ EMBEDDED_KEY_PARAMS = ("jwk", "jku", "x5u", "x5c")
 
 _KID_INJECTION_RE = re.compile(r"(\.\./|\.\.\\|['\";|]|/dev/null|\$\(|`|\\\x00)")
 
+# The claim name is matched on word boundaries that treat "_" as a separator,
+# so a compound name like "user_pin" still matches while an ordinary word
+# that merely contains a sensitive fragment ("shipping_address", "assignment",
+# "secretary") does not.
 _SENSITIVE_CLAIM_RE = re.compile(
-    r"(password|passwd|secret|ssn|social_security|credit_?card|card_?number|"
-    r"cvv|pin|otp|private_?key|api_?key|access_?token|refresh_?token)",
+    r"(?<![a-z0-9])(password|passwd|secret|ssn|social_security|credit_?card|"
+    r"card_?number|cvv|pin|otp|private_?key|api_?key|access_?token|refresh_?token)"
+    r"(?![a-z0-9])",
     re.IGNORECASE,
 )
 
