@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jwt-auditor"
-version = "0.1.0"
+version = "1.0.0"
 description = "Defensive security auditor for JSON Web Tokens: alg=none, weak HMAC secrets, embedded keys, kid injection, lifetime and claim hygiene."
 readme = "README.md"
 requires-python = ">=3.9"
