@@ -3,6 +3,7 @@
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![codecov](https://codecov.io/gh/gravion-ux/jwt-auditor/branch/main/graph/badge.svg)](https://codecov.io/gh/gravion-ux/jwt-auditor)
+[![CI](https://github.com/gravion-ux/jwt-auditor/actions/workflows/ci.yml/badge.svg)](https://github.com/gravion-ux/jwt-auditor/actions/workflows/ci.yml)
 [![Dependencies](https://img.shields.io/badge/runtime%20dependencies-none-brightgreen.svg)](#installation)
 
 ![Demo](docs/demo.png)
@@ -48,6 +49,16 @@ calls, nothing is sent anywhere. See [Authorised use & ethics](#authorised-use--
 - **Tested** — 30 pytest tests covering decoding, every check family, the
   dictionary attack, and the CLI end to end.
 
+## Requirements
+
+- **Python 3.9 or newer** (`requires-python = ">=3.9"`; CI tests
+  3.10, 3.11 and 3.12).
+- **No runtime dependencies** — Python standard library only, and the
+  auditor works fully offline: no network calls, nothing is sent
+  anywhere.
+- **For development / the test suite:** `pip install -e ".[dev]"`
+  (adds `pytest` and `pytest-cov`).
+
 ## Installation
 
 Requires Python 3.9 or newer.
@@ -68,6 +79,17 @@ No installation is strictly required:
 
 ```bash
 PYTHONPATH=src python3 -m jwt_auditor audit <token>
+```
+
+## Quick start
+
+Audit the bundled example tokens — one weak-secret token, one healthy
+token:
+
+```bash
+pip install -e .
+jwt-auditor audit --file examples/weak-secret.txt   # -> critical finding, exit 1
+jwt-auditor audit --file examples/healthy.txt       # -> no findings, exit 0
 ```
 
 ## Usage
@@ -115,7 +137,7 @@ raw token or an `Authorization: Bearer …` value.
 | `1` | Findings at or above the threshold — CI should fail |
 | `2` | Usage / input error, including a malformed token |
 
-## What it does not do
+## Limitations — what it does not do
 
 - It does **not** verify tokens against an issuer's real keys (except the
   weak-secret dictionary) — it audits token hygiene, it is not a JWT library.
@@ -123,6 +145,9 @@ raw token or an `Authorization: Bearer …` value.
   exploitation; findings describe the exposure and the fix.
 - A clean report is not proof a token system is secure — key storage,
   verifier configuration and claim validation still need review.
+- The dictionary attack covers the built-in list of ~50 known-weak
+  secrets plus any `--wordlist` you supply. A secret outside those
+  lists will not be found — that is expected, not a pass.
 
 ## Authorised use & ethics
 
