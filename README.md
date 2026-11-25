@@ -45,7 +45,7 @@ calls, nothing is sent anywhere. See [Authorised use & ethics](#authorised-use--
 - **CI-friendly** — exit `1` when findings reach the `--fail-on` severity
   (default `high`), `0` when clean, `2` on usage errors / malformed tokens.
 - **Zero runtime dependencies** — Python standard library only.
-- **Tested** — 36 pytest tests covering decoding, every check family, the
+- **Tested** — 38 pytest tests covering decoding, every check family, the
   dictionary attack, and the CLI end to end.
 
 ## Installation
