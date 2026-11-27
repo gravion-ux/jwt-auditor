@@ -22,7 +22,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e . pytest pytest-cov
       - name: Run tests with coverage
-        run: python -m pytest -q --cov=jwt_auditor --cov-report=xml
+        run: python -m pytest -q --cov=jwt_auditor --cov-report=xml --cov-fail-under=85
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5
         with:

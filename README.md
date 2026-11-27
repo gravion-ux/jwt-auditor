@@ -6,6 +6,9 @@
 [![CI](https://github.com/gravion-ux/jwt-auditor/actions/workflows/ci.yml/badge.svg)](https://github.com/gravion-ux/jwt-auditor/actions/workflows/ci.yml)
 [![Dependencies](https://img.shields.io/badge/runtime%20dependencies-none-brightgreen.svg)](#installation)
 
+> **Status: Active** — maintained flagship. The auditor remains offline
+> and defensive by design; new checks must preserve that boundary.
+
 ![Demo](docs/demo.png)
 
 *Demo: Auditing a token signed with a weak secret, from the bundled examples.*
@@ -159,8 +162,8 @@ access anything beyond what your authorisation covers.
 ## Development
 
 ```bash
-pip install pytest
-python -m pytest
+pip install pytest pytest-cov
+python -m pytest -q --cov=jwt_auditor --cov-fail-under=85  # 38 tests
 ```
 
 ## Sponsors
