@@ -5,6 +5,8 @@ import hashlib
 import hmac
 import json
 
+import pytest
+
 from jwt_auditor.checks import audit_token
 from jwt_auditor.decode import decode_token
 
@@ -150,6 +152,38 @@ def test_sensitive_claims_flagged():
     token = decode_token(mint(
         {"alg": "HS256"}, healthy_payload(password="hunter2"), key=b"x" * 40))
     assert "sensitive-claims" in ids(audit_token(token, now=NOW))
+
+
+@pytest.mark.parametrize("claim", [
+    "iban", "IBAN", "bank_account", "bankaccount", "account_number",
+    "accountnumber", "passport", "driver_license", "drivers_license",
+    "driver's_license", "driver_licence", "drivers_licence", "driver's_licence",
+    "driverlicense", "driverslicense", "driver'slicense", "driverlicence",
+    "driverslicence", "driver'slicence", "user_bank_account", "user_passport",
+])
+def test_sensitive_financial_and_identity_claims_flagged(claim):
+    token = decode_token(mint(
+        {"alg": "HS256"}, healthy_payload(**{claim: "synthetic-test-value"}),
+        key=b"x" * 40))
+
+    findings = audit_token(token, now=NOW)
+
+    assert ids(findings) == {"sensitive-claims"}
+    assert findings[0].severity == "medium"
+    assert f"Claim name(s) {claim} look like" in findings[0].detail
+    assert "synthetic-test-value" not in findings[0].detail
+
+
+@pytest.mark.parametrize("claim", [
+    "sub", "iss", "aud", "role", "account_id", "account_identifier",
+    "bank_accounting", "account_numbering", "passporting", "driver_licensee",
+])
+def test_ordinary_claims_do_not_trigger_sensitive_claims(claim):
+    # An account ID identifies the user, not their bank account number.
+    token = decode_token(mint(
+        {"alg": "HS256"}, healthy_payload(**{claim: "ordinary-test-value"}),
+        key=b"x" * 40))
+    assert audit_token(token, now=NOW) == []
 
 
 def test_sensitive_claim_substrings_are_not_flagged():

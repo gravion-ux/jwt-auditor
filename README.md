@@ -23,6 +23,10 @@ tokens that carry their own key material (`jwk`/`jku`/`x5u`/`x5c`), injectable
 data sitting in the (only base64-encoded) payload. It produces a prioritised
 report — Markdown for humans, JSON for pipelines — with a 0–100 risk score.
 
+Sensitive-claim checks include IBANs, bank account numbers, passport numbers,
+and driver's licence numbers, alongside credentials and card data. Ordinary
+identifiers such as `account_id` are not flagged by name alone.
+
 It is a **defensive, authorised-testing tool**: fully offline, no network
 calls, nothing is sent anywhere. See [Authorised use & ethics](#authorised-use--ethics).
 

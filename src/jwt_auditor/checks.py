@@ -27,7 +27,8 @@ _KID_INJECTION_RE = re.compile(r"(\.\./|\.\.\\|['\";|]|/dev/null|\$\(|`|\\\x00)"
 # "secretary") does not.
 _SENSITIVE_CLAIM_RE = re.compile(
     r"(?<![a-z0-9])(password|passwd|secret|ssn|social_security|credit_?card|"
-    r"card_?number|cvv|pin|otp|private_?key|api_?key|access_?token|refresh_?token)"
+    r"card_?number|cvv|pin|otp|private_?key|api_?key|access_?token|refresh_?token|"
+    r"iban|bank_?account|account_?number|passport|driver'?s?_?licen[cs]e)"
     r"(?![a-z0-9])",
     re.IGNORECASE,
 )
