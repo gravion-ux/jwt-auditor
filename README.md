@@ -121,6 +121,25 @@ $ jwt-auditor audit --file examples/weak-secret.txt
 
 $ jwt-auditor audit --file examples/alg-none.txt   # -> critical alg-none
 $ jwt-auditor audit --file examples/healthy.txt    # -> No findings, exit 0
+$ jwt-auditor audit --file examples/kid-injection.txt   # -> medium kid-injection-pattern
+$ jwt-auditor audit --file examples/duplicate-keys.txt  # -> medium duplicate-json-keys
+```
+
+The last two examples are synthetic HS256 tokens, signed with the public
+demo-only key `synthetic-example-key-not-for-production`. Both use the fake
+issuer `https://issuer.example.invalid` and subject `synthetic-demo-user`.
+The first puts `../../dev/null` in the `kid` header; the second contains
+two `role` claims (`reader` and `editor`) in its raw payload JSON.
+They are static audit fixtures, not credentials for any service. Their
+fixed `exp` timestamps may eventually add a low-severity `token-expired`
+finding; the intended medium-severity finding remains visible.
+
+Medium findings do not fail the default `high` threshold (exit `0`). To
+make either example fail a CI check, set `--fail-on medium` (exit `1`):
+
+```bash
+jwt-auditor audit --file examples/kid-injection.txt --fail-on medium
+jwt-auditor audit --file examples/duplicate-keys.txt --fail-on medium
 ```
 
 ### Just decode
