@@ -3,9 +3,13 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from jwt_auditor.cli import main
+from jwt_auditor.decode import decode_token
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
+NOW = 1_800_000_000  # fixed time within the synthetic examples' validity window
 
 
 def _example(name):
@@ -56,6 +60,59 @@ def test_audit_from_file(tmp_path):
     path = tmp_path / "token.txt"
     path.write_text(_example("alg-none.txt"), encoding="utf-8")
     assert main(["audit", "--file", str(path)]) == 1
+
+
+@pytest.mark.parametrize(("name", "check_id"), [
+    ("kid-injection.txt", "kid-injection-pattern"),
+    ("duplicate-keys.txt", "duplicate-json-keys"),
+])
+@pytest.mark.parametrize(("fail_on", "exit_code"), [("high", 0), ("medium", 1)])
+def test_audit_synthetic_examples_json(
+    name, check_id, fail_on, exit_code, monkeypatch, capsys,
+):
+    monkeypatch.setattr("jwt_auditor.checks.time.time", lambda: NOW)
+
+    assert main([
+        "audit", "--file", str(EXAMPLES / name), "--format", "json",
+        "--fail-on", fail_on,
+    ]) == exit_code
+
+    report = json.loads(capsys.readouterr().out)
+    assert [finding["check_id"] for finding in report["findings"]] == [check_id]
+    assert report["findings"][0]["severity"] == "medium"
+    assert report["summary"]["medium"] == 1
+    assert report["risk_score"] == 7
+
+
+@pytest.mark.parametrize(("name", "check_id"), [
+    ("kid-injection.txt", "kid-injection-pattern"),
+    ("duplicate-keys.txt", "duplicate-json-keys"),
+])
+def test_audit_synthetic_examples_markdown(name, check_id, monkeypatch, capsys):
+    monkeypatch.setattr("jwt_auditor.checks.time.time", lambda: NOW)
+
+    assert main(["audit", "--file", str(EXAMPLES / name)]) == 0
+
+    output = capsys.readouterr().out
+    assert "jwt-auditor report" in output
+    assert check_id in output
+    assert "[MEDIUM]" in output
+
+
+@pytest.mark.parametrize("name", ["kid-injection.txt", "duplicate-keys.txt"])
+def test_synthetic_example_contents(name):
+    token = decode_token(_example(name))
+    assert token.header["alg"] == "HS256"
+    assert token.payload["iss"] == "https://issuer.example.invalid"
+    assert token.payload["sub"] == "synthetic-demo-user"
+    assert token.payload["iat"] < NOW < token.payload["exp"]
+    assert token.header_duplicates == []
+    if name == "kid-injection.txt":
+        assert token.header["kid"] == "../../dev/null"
+        assert token.payload_duplicates == []
+    else:
+        assert token.payload_duplicates == ["role"]
+        assert token.payload["role"] == "editor"
 
 
 def test_decode_command(capsys):
